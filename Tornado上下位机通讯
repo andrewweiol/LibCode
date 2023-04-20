@@ -1,0 +1,3 @@
+#项目LinuxCNC远程控制 ->> Rockhopper
+#服务器端更新LinuxCNC数据
+#客户端读取Tornado服务器端的静态文件到线程
