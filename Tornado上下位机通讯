@@ -1,3 +1,78 @@
 #项目LinuxCNC远程控制 ->> Rockhopper
 #服务器端更新LinuxCNC数据
 #客户端读取Tornado服务器端的静态文件到线程
+
+
+#简单使用tornado服务器，建立hello world页面及tornado简单页面，并配置template和static文件路径，url分发(已验证）https://blog.csdn.net/java_raylu/article/details/84193803?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-4-84193803-blog-38514683.235^v31^pc_relevant_default_base3&spm=1001.2101.3001.4242.3&utm_relevant_index=7
+
+主目录下XXX.py文件
+import tornado.web
+import tornado.ioloop
+import tornado.httpserver
+import os
+
+from tornado.options import define, options
+
+define('port', default=8005, help='运行指定的端口8005', type=int)
+
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("hello, world")
+
+
+class IndexHandler(tornado.web.RequestHandler):
+    """主路由处理类"""
+
+    def get(self):
+        self.render("test-index.html")
+
+    def post(self, *args, **kwargs):
+        self.write("post request")
+
+
+# handlers = [(r'/',IndexHandler),]
+
+
+# 自定义settings,配置文件
+settings = {
+    "template_path": "templates",
+    "static_path": "statics",
+    # static文件设置别名
+    "static_url_prefix": "/ray",
+}
+
+# 尾部**settings**为加载配置文件
+
+if __name__ == "__main__":
+    app = tornado.web.Application([
+        (r'/', MainHandler),
+        (r"/test-index.html", IndexHandler),
+    ], **settings)
+
+    http_server = tornado.httpserver.HTTPServer(app)
+    http_server.listen(8005)
+    tornado.ioloop.IOLoop.current().start()
+
+    
+    
+    
+templatest文件夹下test-index.html:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h1>这是个一个主页</h1>
+    <form action="/index.html" method="post">
+        <p> username:<input type = "text"></p>
+        <p> password:<input type = "password"></p>
+        <p> <input type = "submit" value="提交"></p>
+    </form>
+    <img src="/ray/123.jpg" />
+    <!--<img src="/static/123.jpg" />-->
+</body>
+</html>
